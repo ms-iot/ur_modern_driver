@@ -20,7 +20,7 @@ void JointInterface::update(RTShared &packet)
 const std::string WrenchInterface::INTERFACE_NAME = "hardware_interface::ForceTorqueSensorInterface";
 WrenchInterface::WrenchInterface(std::string tcp_link)
 {
-  registerHandle(hardware_interface::ForceTorqueSensorHandle("wrench", tcp_link, tcp_.begin(), tcp_.begin() + 3));
+  registerHandle(hardware_interface::ForceTorqueSensorHandle("wrench", tcp_link, &tcp_[0], &tcp_[3]));
 }
 
 void WrenchInterface::update(RTShared &packet)

@@ -1,6 +1,4 @@
 #pragma once
-#include <netdb.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <atomic>
 #include <cstdlib>
@@ -9,6 +7,8 @@
 #include "ur_modern_driver/tcp_socket.h"
 
 #define MAX_SERVER_BUF_LEN 50
+
+struct sockaddr;
 
 class URServer : private TCPSocket
 {

@@ -1,10 +1,23 @@
+#ifndef WIN32
 #include <endian.h>
+#else
+#include <ur_modern_driver/portable_endian.h>
+#endif
+#ifndef WIN32
 #include <netinet/tcp.h>
 #include <unistd.h>
+#else
+#include <ws2tcpip.h>
+#endif
 #include <cstring>
 
 #include "ur_modern_driver/log.h"
 #include "ur_modern_driver/ur/stream.h"
+
+bool URStream::open(int socket_fd, struct sockaddr* address, size_t address_len)
+{
+  return ::connect(socket_fd, address, address_len) == 0;
+}
 
 bool URStream::write(const uint8_t* buf, size_t buf_len, size_t& written)
 {

@@ -1,6 +1,5 @@
 #pragma once
-#include <netdb.h>
-#include <sys/socket.h>
+
 #include <sys/types.h>
 #include <atomic>
 #include <mutex>
@@ -16,10 +15,7 @@ private:
   std::mutex write_mutex_, read_mutex_;
 
 protected:
-  virtual bool open(int socket_fd, struct sockaddr* address, size_t address_len)
-  {
-    return ::connect(socket_fd, address, address_len) == 0;
-  }
+  virtual bool open(int socket_fd, struct sockaddr* address, size_t address_len);
 
 public:
   URStream(std::string& host, int port) : host_(host), port_(port)

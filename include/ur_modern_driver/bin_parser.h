@@ -1,7 +1,6 @@
 #pragma once
 
 #include <assert.h>
-#include <endian.h>
 #include <inttypes.h>
 #include <array>
 #include <bitset>
@@ -40,30 +39,12 @@ public:
   {
     return val;
   }
-  uint16_t decode(uint16_t val)
-  {
-    return be16toh(val);
-  }
-  uint32_t decode(uint32_t val)
-  {
-    return be32toh(val);
-  }
-  uint64_t decode(uint64_t val)
-  {
-    return be64toh(val);
-  }
-  int16_t decode(int16_t val)
-  {
-    return be16toh(val);
-  }
-  int32_t decode(int32_t val)
-  {
-    return be32toh(val);
-  }
-  int64_t decode(int64_t val)
-  {
-    return be64toh(val);
-  }
+  uint16_t decode(uint16_t val);
+  uint32_t decode(uint32_t val);
+  uint64_t decode(uint64_t val);
+  int16_t decode(int16_t val);
+  int32_t decode(int32_t val);
+  int64_t decode(int64_t val);
 
   template <typename T>
   T peek()

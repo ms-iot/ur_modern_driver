@@ -1,7 +1,12 @@
 #include "ur_modern_driver/ur/server.h"
+#ifndef WIN32
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #include <unistd.h>
+#else
+#include <ws2tcpip.h>
+typedef int socklen_t;
+#endif
 #include <cstring>
 #include "ur_modern_driver/log.h"
 
@@ -35,14 +40,21 @@ std::string URServer::getIP()
 bool URServer::open(int socket_fd, struct sockaddr *address, size_t address_len)
 {
   int flag = 1;
-  setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
+  setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&flag), sizeof(int));
   return ::bind(socket_fd, address, address_len) == 0;
 }
 
 bool URServer::bind()
 {
-  std::string empty;
-  bool res = TCPSocket::setup(empty, port_);
+  std::string host;
+#ifdef WIN32
+  char hostname[MAX_PATH] = {0};
+  if (0 == gethostname(hostname, sizeof(hostname)))
+  {
+    host = hostname;
+  }
+#endif
+  bool res = TCPSocket::setup(host, port_);
 
   if (!res)
     return false;
@@ -59,12 +71,21 @@ bool URServer::accept()
     return false;
 
   struct sockaddr addr;
-  socklen_t addr_len;
+  socklen_t addr_len = sizeof(addr);
   int client_fd = -1;
 
   int retry = 0;
-  while((client_fd = ::accept(getSocketFD(), &addr, &addr_len)) == -1){
-    LOG_ERROR("Accepting socket connection failed. (errno: %d)", errno);
+#ifndef INVALID_SOCKET
+#define INVALID_SOCKET -1
+#endif
+  while((client_fd = ::accept(getSocketFD(), &addr, &addr_len)) == INVALID_SOCKET){
+#ifdef WIN32
+    auto error_code = ::WSAGetLastError();
+#else
+    auto error_code = errno;
+#endif
+
+    LOG_ERROR("Accepting socket connection failed. (errno: %d)", error_code);
     if(retry++ >= 5)
       return false;
   }
