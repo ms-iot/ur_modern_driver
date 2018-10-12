@@ -83,8 +83,6 @@ bool TCPSocket::setup(std::string &host, int port)
     setOptions(socket_fd_);
     state_ = SocketState::Connected;
     LOG_INFO("Connection established for %s:%d", host.c_str(), port);
-    auto ipaddress = getIP();
-    LOG_INFO("ip: %s", ipaddress.c_str());
   }
   return connected;
 }
