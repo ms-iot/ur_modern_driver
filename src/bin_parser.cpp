@@ -1,8 +1,4 @@
-#ifndef WIN32
-#include <endian.h>
-#else
 #include "ur_modern_driver/portable_endian.h"
-#endif
 #include "ur_modern_driver/bin_parser.h"
 
 uint16_t BinParser::decode(uint16_t val)
