@@ -1,8 +1,4 @@
-#ifndef WIN32
-#include <endian.h>
-#else
 #include <ur_modern_driver/portable_endian.h>
-#endif
 #ifndef WIN32
 #include <netinet/tcp.h>
 #include <unistd.h>
