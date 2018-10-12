@@ -1,9 +1,5 @@
 #include "ur_modern_driver/ros/trajectory_follower.h"
-#ifndef WIN32
-#include <endian.h>
-#else
 #include <ur_modern_driver/portable_endian.h>
-#endif
 #include <cmath>
 #include <ros/ros.h>
 
