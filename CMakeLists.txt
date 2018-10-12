@@ -134,14 +134,14 @@ elseif(NOT MSVC)
     message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler. Suggested solution: update the pkg build-essential ")
 endif()
 
-if(MSVC)
-  add_definitions(-DNO_STRICT)
-  add_compile_options(/Zc:__cplusplus)
-  add_compile_options(/showIncludes)
-else()
+if(NOT MSVC)
   add_compile_options(-Wall)
   add_compile_options(-Wextra)
   add_compile_options(-Wno-unused-parameter)
+endif()
+
+if(MSVC)
+  add_compile_options(/Zc:__cplusplus)
 endif()
 
 # support indigo's ros_control - This can be removed upon EOL indigo
