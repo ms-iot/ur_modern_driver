@@ -75,17 +75,8 @@ bool URServer::accept()
   int client_fd = -1;
 
   int retry = 0;
-#ifndef INVALID_SOCKET
-#define INVALID_SOCKET -1
-#endif
-  while((client_fd = ::accept(getSocketFD(), &addr, &addr_len)) == INVALID_SOCKET){
-#ifdef WIN32
-    auto error_code = ::WSAGetLastError();
-#else
-    auto error_code = errno;
-#endif
-
-    LOG_ERROR("Accepting socket connection failed. (errno: %d)", error_code);
+  while((client_fd = ::accept(getSocketFD(), &addr, &addr_len)) == -1){
+    LOG_ERROR("Accepting socket connection failed. (errno: %d)", errno);
     if(retry++ >= 5)
       return false;
   }
