@@ -1,13 +1,5 @@
 #include "ur_modern_driver/ros/mb_publisher.h"
 
-#ifdef TRUE
-#undef TRUE
-#endif
-
-#ifdef FALSE
-#undef FALSE
-#endif
-
 inline void appendAnalog(std::vector<ur_msgs::Analog>& vec, double val, uint8_t pin)
 {
   ur_msgs::Analog ana;
