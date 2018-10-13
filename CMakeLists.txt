@@ -140,10 +140,6 @@ if(NOT MSVC)
   add_compile_options(-Wno-unused-parameter)
 endif()
 
-if(MSVC)
-  add_compile_options(/Zc:__cplusplus)
-endif()
-
 # support indigo's ros_control - This can be removed upon EOL indigo
 if("${controller_manager_msgs_VERSION}" VERSION_LESS "0.10.0")
     add_definitions(-DUR_ROS_CONTROL_INTERFACE_OLD_ROS_CONTROL)
