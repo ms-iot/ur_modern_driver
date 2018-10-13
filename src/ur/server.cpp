@@ -46,15 +46,8 @@ bool URServer::open(int socket_fd, struct sockaddr *address, size_t address_len)
 
 bool URServer::bind()
 {
-  std::string host;
-#ifdef WIN32
-  char hostname[MAX_PATH] = {0};
-  if (0 == gethostname(hostname, sizeof(hostname)))
-  {
-    host = hostname;
-  }
-#endif
-  bool res = TCPSocket::setup(host, port_);
+  std::string empty;
+  bool res = TCPSocket::setup(empty, port_);
 
   if (!res)
     return false;
@@ -71,7 +64,7 @@ bool URServer::accept()
     return false;
 
   struct sockaddr addr;
-  socklen_t addr_len;
+  socklen_t addr_len = sizeof(addr);
   int client_fd = -1;
 
   int retry = 0;
