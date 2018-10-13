@@ -59,7 +59,7 @@ bool URServer::accept()
     return false;
 
   struct sockaddr addr;
-  socklen_t addr_len;
+  socklen_t addr_len = sizeof(addr);
   int client_fd = -1;
 
   int retry = 0;
