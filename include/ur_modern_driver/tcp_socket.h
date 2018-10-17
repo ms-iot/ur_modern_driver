@@ -1,10 +1,11 @@
 #pragma once
-#include <netdb.h>
-#include <sys/socket.h>
+
 #include <sys/types.h>
 #include <atomic>
 #include <mutex>
 #include <string>
+
+struct sockaddr;
 
 enum class SocketState
 {

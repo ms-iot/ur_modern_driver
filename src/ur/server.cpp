@@ -1,7 +1,12 @@
 #include "ur_modern_driver/ur/server.h"
+#ifndef WIN32
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #include <unistd.h>
+#else
+#include <ws2tcpip.h>
+typedef int socklen_t;
+#endif
 #include <cstring>
 #include "ur_modern_driver/log.h"
 
@@ -35,7 +40,7 @@ std::string URServer::getIP()
 bool URServer::open(int socket_fd, struct sockaddr *address, size_t address_len)
 {
   int flag = 1;
-  setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
+  setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&flag), sizeof(int));
   return ::bind(socket_fd, address, address_len) == 0;
 }
 

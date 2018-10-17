@@ -1,5 +1,5 @@
 #include "ur_modern_driver/ros/lowbandwidth_trajectory_follower.h"
-#include <endian.h>
+#include <ur_modern_driver/portable_endian.h>
 #include <cmath>
 #include <ros/ros.h>
 

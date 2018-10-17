@@ -130,13 +130,15 @@ if(COMPILER_SUPPORTS_CXX11)
     add_compile_options(-std=c++11)
 elseif(COMPILER_SUPPORTS_CXX0X)
     add_compile_options(-std=c++0x)
-else()
+elseif(NOT MSVC)
     message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler. Suggested solution: update the pkg build-essential ")
 endif()
 
-add_compile_options(-Wall)
-add_compile_options(-Wextra)
-add_compile_options(-Wno-unused-parameter)
+if(NOT MSVC)
+  add_compile_options(-Wall)
+  add_compile_options(-Wextra)
+  add_compile_options(-Wno-unused-parameter)
+endif()
 
 # support indigo's ros_control - This can be removed upon EOL indigo
 if("${controller_manager_msgs_VERSION}" VERSION_LESS "0.10.0")
@@ -152,20 +154,7 @@ include_directories(include
 
 ## Declare a C++ library
 
-# Hardware Interface
-add_library(ur_hardware_interface
-  src/ros/hardware_interface.cpp
-  src/ros/controller.cpp)
-target_link_libraries(ur_hardware_interface
-  ${catkin_LIBRARIES}
-)
-
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(ur_modern_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Declare a C++ executable
+# Driver library
 set(${PROJECT_NAME}_SOURCES
     src/ros/action_server.cpp
     src/ros/mb_publisher.cpp
@@ -181,9 +170,36 @@ set(${PROJECT_NAME}_SOURCES
     src/ur/master_board.cpp
     src/ur/rt_state.cpp
     src/ur/messages.cpp
-    src/tcp_socket.cpp)
+    src/tcp_socket.cpp
+    src/bin_parser.cpp)
 
-add_executable(ur_driver ${${PROJECT_NAME}_SOURCES} src/ros_main.cpp)
+add_library(ur_driver_common
+  ${${PROJECT_NAME}_SOURCES}
+)
+target_link_libraries(ur_driver_common
+  ${catkin_LIBRARIES}
+  Ws2_32.lib
+)
+set_target_properties(ur_driver_common PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+# Hardware Interface
+add_library(ur_hardware_interface
+  src/ros/hardware_interface.cpp
+  src/ros/controller.cpp)
+target_link_libraries(ur_hardware_interface
+  ${catkin_LIBRARIES}
+  ur_driver_common
+)
+set_target_properties(ur_hardware_interface PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+## Add cmake target dependencies of the library
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+# add_dependencies(ur_modern_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+
+add_executable(ur_driver src/ros_main.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -192,6 +208,7 @@ add_dependencies(ur_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED
 ## Specify libraries to link a library or executable target against
 target_link_libraries(ur_driver
   ur_hardware_interface
+  ur_driver_common
   ${catkin_LIBRARIES}
  )
 
@@ -203,9 +220,12 @@ install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 install(DIRECTORY config/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config)
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ur_driver ur_hardware_interface
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(TARGETS ur_driver_common ur_hardware_interface
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+install(TARGETS ur_driver
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Mark cpp header files for installation
